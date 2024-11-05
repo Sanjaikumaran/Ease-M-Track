@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Transaction | EMT</title>
+    <link rel="stylesheet" href="../nav bar/style.css">
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+
+      form {
+
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        max-width: 400px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+      }
+
+      textarea,
+      input {
+        width: 95%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        resize: none;
+        overflow: hidden;
+      }
+
+      .custom-select {
+        position: relative;
+      }
+
+      .select-selected {
+        background-color: #ffffff;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .select-items {
+        position: absolute;
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        z-index: 99;
+        width: 100%;
+        display: none;
+      }
+
+      .select-items div {
+        padding: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid #ddd;
+      }
+      h1 {
+        margin-top: 80px;
+        font-size: 1.5em;
+        color: #3E8DA8;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+      .select-items div:hover {
+        background-color: #f1f1f1;
+      }
+
+      button {
+        background-color: #3E8DA8;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background-color: #1d637a;
+      }
+
+      button:focus {
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+      }
+      .button-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .input-groups {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .dynamic-input {
+        margin-bottom: 15px;
+      }
+
+      @media (max-width: 600px) {
+        form {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="navbar-container">
+        <nav>
+            <div class="navbar">
+              <i class='bx bx-menu'></i>
+              <div class="logo"><a href="#">Ease-M-Track</a></div>
+              <div class="nav-links">
+                <div class="sidebar-logo">
+                  <span class="logo-name">Ease-M-Track</span>
+                  <i class='bx bx-x' ></i>
+                </div>
+                <ul class="links">
+                  <li><a href="../">HOME</a></li>
+                  <!--<li>
+                    <a href="#">HTML & CSS</a>
+                    <i class='bx bxs-chevron-down htmlcss-arrow arrow  '></i>
+                    <ul class="htmlCss-sub-menu sub-menu">
+                      <li><a href="#">Web Design</a></li>
+                      <li><a href="#">Login Forms</a></li>
+                      <li><a href="#">Card Design</a></li>
+                      <li class="more">
+                        <span><a href="#">More</a>
+                        <i class='bx bxs-chevron-right arrow more-arrow'></i>
+                      </span>
+                        <ul class="more-sub-menu sub-menu">
+                          <li><a href="#">Neumorphism</a></li>
+                          <li><a href="#">Pre-loader</a></li>
+                          <li><a href="#">Glassmorphism</a></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#">JAVASCRIPT</a>
+                    <i class='bx bxs-chevron-down js-arrow arrow '></i>
+                    <ul class="js-sub-menu sub-menu">
+                      <li><a href="#">Dynamic Clock</a></li>
+                      <li><a href="#">Form Validation</a></li>
+                      <li><a href="#">Card Slider</a></li>
+                      <li><a href="#">Complete Website</a></li>
+                    </ul>
+                  </li>-->
+                  <!--<li><a href="">Add Transaction</a></li>-->
+                  <li><a href="../dashboard/">Dashboard</a></li>
+
+                  <li><a href="../my-transactions/">My Transactions</a></li>
+                </ul>
+              </div>
+              <div class="search-box" onclick="if(window.confirm('Are you sure you want to log out?')){
+              window.location.href='../login/';}">
+                <i class='bx bx-log-in-circle'></i>
+                <div class="input-box">
+                  <input type="text" placeholder="Search...">
+                </div>
+              </div>
+            </div>
+          </nav>
+    </div>
+    <h1>New Transaction</h1>
+    <form action="manage.php" method="post" id="inputForm">
+      <div id="inputContainer">
+        <h2>Transaction Details <span class="transaction-number">1</span></h3>
+        <div class="input-groups dynamic-input">
+          <div>
+            <label>Amount</label>
+            <input type="number" name="amount[]" placeholder="Enter Amount" required />
+          </div>
+          <div>
+            <label>Transaction Type</label>
+            <div class="custom-select">
+              <input type="text" name="transactionType[]" placeholder="Select..." required class="select-selected" readonly />
+              <div class="select-items">
+                <div data-value="in">In</div>
+                <div data-value="out">Out</div>
+                <div data-value="loan">Loan</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label>Given To</label>
+            <input type="text" name="givenTo[]" placeholder="Enter Given To" required />
+          </div>
+          <div>
+            <label>Remarks</label>
+            <textarea name="remarks[]" rows="1" placeholder="Enter Remarks" oninput="autoResize(this)"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="button-container">
+        <button type="button" id="addInputButton">Add Another Entry</button>
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+  
+    <script>
+       fetch("../classes/auth.class.php")
+  .then((response) => response.json())
+  .then((data) => {
+    if (!data.sessionActive) {
+      window.location.href = "../login/";
+     
+    }
+  })
+  .catch((error) => {
+    console.error("Error:", error);
+  });
+      function autoResize(textarea) {
+        textarea.style.height = "auto";
+        textarea.style.height = textarea.scrollHeight + "px";
+      }
+      function setupCustomSelect(customSelect) {
+  const selected = customSelect.querySelector(".select-selected");
+  const items = customSelect.querySelector(".select-items");
+
+  selected.addEventListener("focus", function (event) {
+    event.stopPropagation();
+    closeAllCustomSelects();
+    items.style.display = "block";
+  });
+
+
+
+  items.querySelectorAll("div").forEach((item) => {
+    item.addEventListener("click", function () {
+      selected.value = item.innerText; // Set the selected value
+      items.style.display = "none"; // Hide dropdown
+    });
+  });
+
+  // Close dropdown when clicking outside the select area
+  document.addEventListener("click", function (e) {
+    if (!customSelect.contains(e.target)) {
+      items.style.display = "none";
+    }
+  });
+}
+
+// Helper function to close all open custom selects
+function closeAllCustomSelects() {
+  document.querySelectorAll(".select-items").forEach((item) => {
+    item.style.display = "none";
+  });
+}
+
+// Add new input group for transactions
+document.getElementById("addInputButton").addEventListener("click", function () {
+  const inputContainer = document.getElementById("inputContainer");
+  
+  const newInputGroup = document.createElement("div");
+  newInputGroup.classList.add("input-groups", "dynamic-input");
+
+  // HTML structure with a remove button
+  newInputGroup.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h2>Transaction Details <span class="transaction-number"></span></h2>
+      <button type="button" onclick="removeEntry(this)">X</button>
+    </div>
+    <div>
+      <label>Amount</label>
+      <input type="number" name="amount[]" placeholder="Enter Amount" required />
+    </div>
+    <div>
+      <label>Transaction Type</label>
+      <div class="custom-select">
+        <input type="text" name="transactionType[]" placeholder="Select..." required class="select-selected" readonly />
+        <div class="select-items">
+          <div data-value="in">In</div>
+          <div data-value="out">Out</div>
+          <div data-value="loan">Loan</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <label>Given To</label>
+      <input type="text" name="givenTo[]" placeholder="Enter Given To" required />
+    </div>
+    <div>
+      <label>Remarks</label>
+      <textarea name="remarks[]" rows="1" placeholder="Enter Remarks" oninput="autoResize(this)"></textarea>
+    </div>
+  `;
+
+  inputContainer.appendChild(newInputGroup);
+
+  // Set up custom select for the newly added entry
+  setupCustomSelect(newInputGroup.querySelector(".custom-select"));
+
+  // Update transaction numbers for all entries
+  updateTransactionNumbers();
+});
+
+// Function to update the transaction numbers for all entries
+function updateTransactionNumbers() {
+  const transactionEntries = document.querySelectorAll(".dynamic-input .transaction-number");
+  transactionEntries.forEach((transactionNumber, index) => {
+    transactionNumber.textContent = index + 2; // Start numbering from 1
+  });
+}
+
+// Function to handle removing an entry and updating numbers
+function removeEntry(button) {
+  const entryToRemove = button.closest(".dynamic-input");
+  entryToRemove.remove();
+  updateTransactionNumbers();
+}
+ 
+document.querySelectorAll(".custom-select").forEach(setupCustomSelect);
+      </script>
+      <script src="../nav bar/script.js" defer>// Initial setup for existing select dropdown
+     
+      // Load the navbar HTML into the container
+      fetch('../nav bar/index.html')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('navbar-container').innerHTML = data;
+        })
+        .catch(error => console.error('Error loading navbar:', error));
+    </script>
+    <script src="../assets/js/components.js"></script>
+    <script src="../nav bar/script.js"></script>
+  </body>
+  </html>

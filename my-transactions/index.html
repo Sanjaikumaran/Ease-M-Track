@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Transactions | EMT</title>
+    <link rel="stylesheet" href="../nav bar/style.css">
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+
+    <style>
+        #datatable {
+    width: 100%;
+    overflow-x: auto;
+}
+
+#myTable {
+    width: 100%;
+    min-width: 600px; /* Ensures horizontal scroll if the screen is smaller */
+    border-collapse: collapse;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#myTable th, #myTable td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+#myTable th {
+    background-color: #f2f2f2;
+    font-weight: 500;
+}
+
+      #datatable {
+    position: relative;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    margin-bottom: 20px; /* Add space below the table */
+}
+
+#datatable th, #datatable td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+#datatable th {
+    background-color: #f2f2f2;
+}
+
+#error-message {
+    color: red;
+    margin: 10px 0;
+    display: none;
+}
+
+#loading-message {
+    display: none;
+    color: green;
+    margin: 10px 0;
+}
+
+/* Additional styles for better spacing around the table */
+body {
+    padding: 20px; /* Add padding to the body */
+}
+
+#myTable {
+    width: 100%; /* Ensure table uses full width */
+    margin-top: 20px; /* Space above the table */
+}
+   /* Modal Background */
+   #editModal {
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Modal Content */
+    .modal-content {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        width: 80%;
+        max-width: 500px;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    /* Close Button */
+    #closeModal {
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        color: #555;
+        cursor: pointer;
+    }
+
+    #closeModal:hover {
+        color: #ff0000;
+    }
+
+    /* Form Labels and Inputs */
+    #editForm label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    #editForm input {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+    }
+
+    #editForm input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    /* Submit Button */
+    #editForm button {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #editForm button:hover {
+        background-color: #0056b3;
+    }
+    h1 {
+        margin-top: 80px;
+        font-size: 1.5em;
+        color: #3E8DA8;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    /* Fade In Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div id="navbar-container">
+        <nav>
+            <div class="navbar">
+              <i class='bx bx-menu'></i>
+              <div class="logo"><a href="#">Ease-M-Track</a></div>
+              <div class="nav-links">
+                <div class="sidebar-logo">
+                  <span class="logo-name">Ease-M-Track</span>
+                  <i class='bx bx-x' ></i>
+                </div>
+                <ul class="links">
+                  <li><a href="../">HOME</a></li>
+                  <!--<li>
+                    <a href="#">HTML & CSS</a>
+                    <i class='bx bxs-chevron-down htmlcss-arrow arrow  '></i>
+                    <ul class="htmlCss-sub-menu sub-menu">
+                      <li><a href="#">Web Design</a></li>
+                      <li><a href="#">Login Forms</a></li>
+                      <li><a href="#">Card Design</a></li>
+                      <li class="more">
+                        <span><a href="#">More</a>
+                        <i class='bx bxs-chevron-right arrow more-arrow'></i>
+                      </span>
+                        <ul class="more-sub-menu sub-menu">
+                          <li><a href="#">Neumorphism</a></li>
+                          <li><a href="#">Pre-loader</a></li>
+                          <li><a href="#">Glassmorphism</a></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#">JAVASCRIPT</a>
+                    <i class='bx bxs-chevron-down js-arrow arrow '></i>
+                    <ul class="js-sub-menu sub-menu">
+                      <li><a href="#">Dynamic Clock</a></li>
+                      <li><a href="#">Form Validation</a></li>
+                      <li><a href="#">Card Slider</a></li>
+                      <li><a href="#">Complete Website</a></li>
+                    </ul>
+                  </li>-->
+                  <li><a href="../dashboard/">Dashboard</a></li>
+
+                  <li><a href="../new-transactions/">New Transaction</a></li>
+                  <!--<li><a href="">My Transactions</a></li>-->
+                </ul>
+              </div>
+              <div class="search-box" onclick="if(window.confirm('Are you sure you want to log out?')){
+              window.location.href='../login/';}">
+                <i class='bx bx-log-in-circle'></i>
+                <div class="input-box">
+                  <input type="text" placeholder="Search...">
+                </div>
+              </div>
+            </div>
+          </nav>
+    </div>
+    <h1>My Transactions</h1>
+    <div id="loading-message">Loading data...</div>
+    <div id="error-message">Error fetching data. Please try again later.</div>
+    <div id="datatable" style=" overflow-x: auto;">
+        <table id="myTable" class="display">
+            <thead>
+                <tr>
+                    <th>SNo</th>
+                    <th>Timestamp</th>
+                    <th>Amount</th>
+                    <th>Transaction Type</th>
+                    <th>Given To</th>
+                    <th>Remark</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic table rows go here -->
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Modal Structure -->
+<div id="editModal" style="display:none;">
+    <div class="modal-content">
+        <span id="closeModal" style="cursor:pointer;">&times;</span>
+        <h2>Edit Transaction</h2>
+        <form id="editForm" action="./edit.php" method="post">
+            <label for="SNo">SNo</label>
+            <input type="text" id="SNo" name="SNo" readonly>
+            <label for="Timestamp">Timestamp</label>
+            <input type="text" id="Timestamp" name="Timestamp" readonly>
+            <label for="Amount">Amount</label>
+            <input type="text" id="Amount" name="Amount">
+            <label for="TransactionType">Transaction Type</label>
+            <input type="text" id="TransactionType" name="TransactionType">
+            <label for="GivenTo">Given To</label>
+            <input type="text" id="GivenTo" name="GivenTo">
+            <label for="Remark">Remark</label>
+            <input type="text" id="Remark" name="Remark">
+            <button type="submit">Update</button>
+        </form>
+    </div>
+</div>
+
+    <script>
+        fetch("../classes/auth.class.php")
+  .then((response) => response.json())
+  .then((data) => {
+    if (!data.sessionActive) {
+   
+      window.location.href = "../login/";
+    }
+  })
+  .catch((error) => {
+    console.error("Error:", error);
+  });
+        const fetchData = async () => {
+            document.getElementById('loading-message').style.display = 'block';
+            try {
+                const response = await fetch("getData.php", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                
+                const data = await response.json();
+                document.getElementById('loading-message').style.display = 'none';
+        
+                if (!Array.isArray(data) || data.length === 0) {
+                    alert("No data received");
+                    throw new Error("No data received");
+                }
+        
+                const formattedData = data.map(item => [
+                    item.SNo,
+                    item.Timestamp,
+                    item.Amount,
+                    item.TransactionType,
+                    item.GivenTo,
+                    item.Remark
+                ]);
+        
+                const table = $('#myTable').DataTable({
+                    paging: false,
+                    data: formattedData,
+                    columns: [
+                        { title: "SNo" },
+                        { title: "Timestamp" },
+                        { title: "Amount" },
+                        { title: "Transaction Type" },
+                        { title: "Given To" },
+                        { title: "Remark" }
+                    ],
+                    responsive: true,
+                    
+                });
+    
+              
+                $('#myTable tbody').on('dblclick', 'td', function() {
+    // Get the closest row to the clicked cell
+    const row = $(this).closest('tr');
+    
+    // Use the DataTables API to get the data for that row
+    const data = table.row(row).data();
+    
+    // Populate the input fields with the row data
+    document.getElementById('SNo').value = data[0];
+    document.getElementById('Timestamp').value = data[1];
+    document.getElementById('Amount').value = data[2];
+    document.getElementById('TransactionType').value = data[3];
+    document.getElementById('GivenTo').value = data[4];
+    document.getElementById('Remark').value = data[5];
+
+    // Show the edit modal
+    document.getElementById('editModal').style.display = 'flex';
+});
+
+
+document.getElementById('closeModal').onclick = function() {
+    document.getElementById('editModal').style.display = 'none';
+};
+
+
+document.getElementById('editForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(this);
+    const actionUrl = this.action;
+
+    const submitButton = this.querySelector("button[type='submit']");
+    submitButton.disabled = true;
+    submitButton.textContent = "Submitting...";
+
+    try {
+        const response = await fetch(actionUrl, {
+            method: "POST",
+            body: formData,
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+
+            if (result.status === "success") {
+                alert(result.message); 
+
+              
+                document.getElementById('editModal').style.display = 'none';
+
+                reloadDataTable();
+            } else {
+                alert("Error: " + result.message);
+            }
+        } else {
+            alert("Error: An issue occurred on the server. Please try again later.");
+        }
+    } catch (error) {
+        console.error("Network error:", error);
+        alert("Network error: Please check your internet connection and try again.");
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Submit";
+    }
+});
+
+
+function reloadDataTable() {
+  
+    $('#myTable').DataTable().clear().destroy();
+
+    
+    fetchData(); 
+}
+
+                
+                
+    
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById('loading-message').style.display = 'none';
+                document.getElementById('error-message').style.display = 'block';
+            }
+        };
+        
+        fetchData();
+    </script>
+    
+    
+    <script src="../nav bar/script.js"></script>
+</body>
+</html>

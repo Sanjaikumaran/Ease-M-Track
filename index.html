@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage | Ease-M-Tracker</title>
+    <link
+      href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      body {
+        background-color: #f7f9fc;
+        color: #333;
+        padding: 20px;
+      }
+      .filter-group {
+        margin-top: 20px;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+      .filter-group select,
+      .filter-group button {
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #333;
+        font-size: 1em;
+        transition: border-color 0.3s;
+      }
+      .filter-group select:focus,
+      .filter-group button:hover {
+        border-color: #3e8da8;
+      }
+      .filter-group button {
+        cursor: pointer;
+        background-color: #3e8da8;
+        color: white;
+      }
+      .filter-group button:hover {
+        background-color: #337ab7;
+      }
+      .summary {
+        margin-top: 20px;
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .summary h2 {
+        margin-bottom: 10px;
+        color: #3e8da8;
+      }
+      .summary p {
+        margin: 5px 0;
+        font-size: 1.1em;
+      }
+      table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        background-color: #fff;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      th,
+      td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+      th {
+        background-color: #f0f4f8;
+        color: #333;
+      }
+      tbody tr:hover {
+        background-color: #f9fafb;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="filter-group">
+      <select id="transactionTypeFilter">
+        <option value="">All</option>
+        <option value="" hidden selected>Select...</option>
+      </select>
+      <select id="givenToFilter">
+        <option value="">All</option>
+        <option value="" hidden selected>Select...</option>
+      </select>
+      <button id="filterButton">Filter</button>
+    </div>
+
+    <div class="summary">
+      <h2>Transaction Summary</h2>
+      <p id="lastIncome">Last Income: $0</p>
+      <p id="lastExpense">Total Expense: $0</p>
+      <p id="currentBalance">Current Balance: $0</p>
+    </div>
+
+    <table id="myTable">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Timestamp</th>
+          <th>Amount</th>
+          <th>Transaction Type</th>
+          <th>Given To</th>
+          <th>Remark</th>
+        </tr>
+      </thead>
+      <tbody id="transactionBody"></tbody>
+    </table>
+
+    <script>
+      window.onload = function () {
+        fetchTransactions();
+      };
+
+      function fetchTransactions() {
+        fetch("/dashboard/getDetails.php") // Adjust the endpoint as necessary
+          .then((response) => response.json())
+          .then((data) => {
+            const givenToFilter = document.getElementById("givenToFilter");
+            const transactionTypeFilter = document.getElementById(
+              "transactionTypeFilter"
+            );
+
+            givenToFilter.innerHTML = '<option value="" selected>All</option>';
+            transactionTypeFilter.innerHTML =
+              '<option value="" selected>All</option>';
+
+            const givenToSet = new Set();
+            const typeSet = new Set();
+
+            data.data.forEach((transaction) => {
+              if (transaction.GivenTo) {
+                givenToSet.add(transaction.GivenTo);
+              }
+              if (transaction.TransactionType) {
+                typeSet.add(transaction.TransactionType);
+              }
+            });
+
+            givenToSet.forEach((option) => {
+              const opt = document.createElement("option");
+              opt.value = option;
+              opt.textContent = option;
+              givenToFilter.appendChild(opt);
+            });
+
+            typeSet.forEach((option) => {
+              const opt = document.createElement("option");
+              opt.value = option;
+              opt.textContent = option;
+              transactionTypeFilter.appendChild(opt);
+            });
+
+            displayTransactions(data.data);
+          })
+          .catch((error) =>
+            console.error("Error fetching transactions:", error)
+          );
+      }
+
+      function displayTransactions(transactions) {
+        const tableBody = document.getElementById("transactionBody");
+        tableBody.innerHTML = "";
+
+        transactions.forEach((transaction, index) => {
+          const row = `<tr>
+                    <td>${index + 1}</td>
+                    <td>${transaction.Timestamp}</td>
+                    <td>${transaction.Amount}</td>
+                    <td>${transaction.TransactionType}</td>
+                    <td>${transaction.GivenTo}</td>
+                    <td>${transaction.Remark}</td>
+                </tr>`;
+          tableBody.insertAdjacentHTML("beforeend", row);
+        });
+
+        document.getElementById("filterButton").click();
+      }
+
+      document.getElementById("filterButton").onclick = function () {
+        const transactionType = document.getElementById(
+          "transactionTypeFilter"
+        ).value;
+        const givenTo = document.getElementById("givenToFilter").value;
+        const table = document
+          .getElementById("myTable")
+          .getElementsByTagName("tbody")[0];
+        const rows = table.getElementsByTagName("tr");
+        let lastIncome = 0;
+        let totalExpensesAfterLastIncome = 0;
+        let incomeFound = false;
+        let lastIncomeDate = null;
+
+        for (let i = 0; i < rows.length; i++) {
+          const cells = rows[i].getElementsByTagName("td");
+          const amount = parseFloat(cells[2].innerText);
+          const type = cells[3].innerText;
+          const givenToCell = cells[4].innerText;
+          const transactionDate = new Date(cells[1].innerText); // Assuming Timestamp is in cells[1]
+
+          if (
+            (transactionType === "" || type === transactionType) &&
+            (givenTo === "" || givenToCell === givenTo)
+          ) {
+            rows[i].style.display = "";
+           
+
+            if (type === "In") {
+              lastIncome = amount;
+              lastIncomeDate = transactionDate; // Capture the date of the last income
+              incomeFound = true;
+            }
+          } else {
+            rows[i].style.display = "none";
+          }
+        }
+        for (let i = 0; i < rows.length; i++) {
+          const cells = rows[i].getElementsByTagName("td");
+          const amount = parseFloat(cells[2].innerText);
+          const type = cells[3].innerText;
+          const givenToCell = cells[4].innerText;
+          const transactionDate = new Date(cells[1].innerText); // Assuming Timestamp is in cells[1]
+
+          if (
+            (transactionType === "" || type === transactionType) &&
+            (givenTo === "" || givenToCell === givenTo)
+          ) {
+            rows[i].style.display = "";
+            if (type === "Out" && incomeFound) {
+              // Only accumulate expenses that are after the last income date
+              if (transactionDate > lastIncomeDate) {
+                totalExpensesAfterLastIncome += amount;
+              }
+            }
+          } else {
+            rows[i].style.display = "none";
+          }
+        }
+        document.getElementById(
+          "lastIncome"
+        ).innerText = `Last Income: $${lastIncome}`;
+        document.getElementById(
+          "lastExpense"
+        ).innerText = `Total Expense: $${totalExpensesAfterLastIncome}`;
+        document.getElementById(
+          "currentBalance"
+        ).innerText = `Current Balance: $${
+          lastIncome - totalExpensesAfterLastIncome
+        }`;
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | EMT</title>
+    <link rel="stylesheet" href="../nav bar/style.css">
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+        <style>
+            * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+    body {
+        background-color: #f7f9fc;
+        color: #333;
+        padding: 15px;
+    }
+    h1 {
+        margin-top: 80px;
+        font-size: 1.5em;
+        color: #3E8DA8;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .filter-group, .button-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 15px 0;
+    }
+    label {
+        font-size: 0.9em;
+        color: #666;
+    }
+    select, input[type="date"] {
+        width: 100%;
+        padding: 8px;
+        font-size: 1em;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #333;
+    }
+    button {
+        padding: 12px;
+        background-color: #3E8DA8;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        width: 100%;
+        text-align: center;
+    }
+    button:hover {
+        background-color: #3A7A8A;
+    }
+    #totalsDisplay, #detailsDisplay {
+        margin: 15px 0;
+    }
+    #totalsDisplay h2 {
+        font-size: 1.2em;
+        color: #3E8DA8;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    #transactionTable {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9em;
+    }
+    #transactionTable th, #transactionTable td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+        color: #555;
+    }
+    #transactionTable th {
+        background-color: #f0f4f8;
+        font-weight: 600;
+    }
+    #transactionTable tbody tr:hover {
+        background-color: #f9fafb;
+    }
+
+    /* Responsive styling */
+    @media (max-width: 600px) {
+        h1 {
+            font-size: 1.3em;
+        }
+        label {
+            font-size: 0.85em;
+        }
+        select, input[type="date"], button {
+            font-size: 0.9em;
+            padding: 10px;
+        }
+        #totalsDisplay h2 {
+            font-size: 1em;
+        }
+        #transactionTable th, #transactionTable td {
+            padding: 8px;
+        }
+    }
+
+        </style>
+</head>
+<body>
+    <div id="navbar-container">
+        <nav>
+            <div class="navbar">
+              <i class='bx bx-menu'></i>
+              <div class="logo"><a href="#">Ease-M-Track</a></div>
+              <div class="nav-links">
+                <div class="sidebar-logo">
+                  <span class="logo-name">Ease-M-Track</span>
+                  <i class='bx bx-x' ></i>
+                </div>
+                <ul class="links">
+                  <li><a href="../">HOME</a></li>
+                  <!--<li>
+                    <a href="#">HTML & CSS</a>
+                    <i class='bx bxs-chevron-down htmlcss-arrow arrow  '></i>
+                    <ul class="htmlCss-sub-menu sub-menu">
+                      <li><a href="#">Web Design</a></li>
+                      <li><a href="#">Login Forms</a></li>
+                      <li><a href="#">Card Design</a></li>
+                      <li class="more">
+                        <span><a href="#">More</a>
+                        <i class='bx bxs-chevron-right arrow more-arrow'></i>
+                      </span>
+                        <ul class="more-sub-menu sub-menu">
+                          <li><a href="#">Neumorphism</a></li>
+                          <li><a href="#">Pre-loader</a></li>
+                          <li><a href="#">Glassmorphism</a></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#">JAVASCRIPT</a>
+                    <i class='bx bxs-chevron-down js-arrow arrow '></i>
+                    <ul class="js-sub-menu sub-menu">
+                      <li><a href="#">Dynamic Clock</a></li>
+                      <li><a href="#">Form Validation</a></li>
+                      <li><a href="#">Card Slider</a></li>
+                      <li><a href="#">Complete Website</a></li>
+                    </ul>
+                  </li>-->
+                  <!--<li><a href="">Add Transaction</a></li>-->    
+                  <li><a href="../new-transactions/">New Transaction</a></li>
+
+                  <li><a href="../my-transactions/">My Transactions</a></li>
+                </ul>
+              </div>
+              <div class="search-box" onclick="if(window.confirm('Are you sure you want to log out?')){
+              window.location.href='../login/';}">
+                <i class='bx bx-log-in-circle'></i>
+                <div class="input-box">
+                  <input type="text" placeholder="Search...">
+                </div>
+              </div>
+            </div>
+          </nav>
+    </div>
+    <h1>Transaction Totals</h1>
+
+    <!-- Date Range and Filters -->
+    <div class="filter-group">
+        <label for="dateRange">Date Range:</label>
+        <select id="dateRange" onchange="toggleCustomDate()">
+            <option value="all">All</option>
+            <option value="week">Last Week</option>
+            <option value="month">Last Month</option>
+            <option value="year">Last Year</option>
+            <option value="custom">Custom</option>
+        </select>
+
+        <label for="startDate" id="startDateLabel" style="display:none;">Start Date:</label>
+        <input type="date" id="startDate" style="display:none;">
+        
+        <label for="endDate" id="endDateLabel" style="display:none;">End Date:</label>
+        <input type="date" id="endDate" style="display:none;">
+
+        <label for="transactionType">Transaction Type:</label>
+        <select id="transactionType">
+            <option value="">All</option>
+        </select>
+
+        <label for="givenTo">Given To:</label>
+        <select id="givenTo">
+            <option value="">All</option>
+        </select>
+
+        <button onclick="applyFilters()">Apply Filters</button>
+    </div>
+
+    <div id="totalsDisplay"></div>
+    <div id="detailsDisplay" style="display:none;"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script>
+        let transactions = [];
+
+        async function fetchTransactions() {
+            const response = await fetch('getDetails.php'); // Adjust to your PHP script location
+            const data = await response.json();
+            
+            if (data.status === "success") {
+                transactions = data.data;
+                populateFilterOptions();
+            } else {
+                console.error(data.message);
+            }
+        }
+
+        function populateFilterOptions() {
+            const transactionTypes = new Set();
+            const givenToOptions = new Set();
+
+            transactions.forEach(transaction => {
+                transactionTypes.add(transaction.TransactionType);
+                givenToOptions.add(transaction.GivenTo);
+            });
+
+            // Populate Transaction Type options
+            const transactionTypeSelect = document.getElementById('transactionType');
+            transactionTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                transactionTypeSelect.appendChild(option);
+            });
+
+            // Populate Given To options
+            const givenToSelect = document.getElementById('givenTo');
+            givenToOptions.forEach(person => {
+                const option = document.createElement('option');
+                option.value = person;
+                option.textContent = person;
+                givenToSelect.appendChild(option);
+            });
+        }
+
+        function toggleCustomDate() {
+            const dateRange = document.getElementById('dateRange').value;
+            const customDate = (dateRange === "custom");
+            document.getElementById('startDate').style.display = customDate ? "inline-block" : "none";
+            document.getElementById('endDate').style.display = customDate ? "inline-block" : "none";
+            document.getElementById('startDateLabel').style.display = customDate ? "inline-block" : "none";
+            document.getElementById('endDateLabel').style.display = customDate ? "inline-block" : "none";
+        }
+
+        function calculateDateRange() {
+            const dateRange = document.getElementById('dateRange').value;
+            const today = new Date();
+            let startDate, endDate;
+
+            switch (dateRange) {
+                case "week":
+                    startDate = new Date(today);
+                    startDate.setDate(today.getDate() - 7);
+                    endDate = today;
+                    break;
+                case "month":
+                    startDate = new Date(today);
+                    startDate.setMonth(today.getMonth() - 1);
+                    endDate = today;
+                    break;
+                case "year":
+                    startDate = new Date(today);
+                    startDate.setFullYear(today.getFullYear() - 1);
+                    endDate = today;
+                    break;
+                case "custom":
+                    startDate = new Date(document.getElementById('startDate').value);
+                    endDate = new Date(document.getElementById('endDate').value);
+                    break;
+                default:
+                    return { startDate: null, endDate: null };
+            }
+
+            return { startDate, endDate };
+        }
+
+        function filterTransactions() {
+            const { startDate, endDate } = calculateDateRange();
+            const transactionType = document.getElementById('transactionType').value;
+            const givenTo = document.getElementById('givenTo').value;
+
+            return transactions.filter(transaction => {
+                const transactionDate = new Date(transaction.Timestamp);
+                const isWithinDateRange = (startDate && endDate) ? (transactionDate >= startDate && transactionDate <= endDate) : true;
+                const matchesType = transactionType ? transaction.TransactionType === transactionType : true;
+                const matchesGivenTo = givenTo ? transaction.GivenTo === givenTo : true;
+                return isWithinDateRange && matchesType && matchesGivenTo;
+            });
+        }
+
+        function applyFilters() {
+            const filteredTransactions = filterTransactions();
+            const total = filteredTransactions.reduce((sum, transaction) => 
+                sum + parseFloat(transaction.Amount.replace(/,/g, '')), 0);
+            const formattedTotal = total.toLocaleString();
+
+            document.getElementById('totalsDisplay').innerHTML = `<h2>Total: ${formattedTotal}</h2>`;
+            document.getElementById('detailsDisplay').style.display = 'none';
+
+            const detailsButton = document.createElement('button');
+            detailsButton.textContent = "Show Details";
+            detailsButton.onclick = () => showDetails(filteredTransactions);
+            document.getElementById('totalsDisplay').appendChild(detailsButton);
+        }
+
+        function showDetails(transactions) {
+            let detailsHTML = `
+                <h3>Transaction Details</h3>
+                <table id="transactionTable" class="display" style="width:100%">
+                    <thead>
+                        <tr><th>SNo</th><th>Timestamp</th><th>Amount</th><th>Transaction Type</th><th>Given To</th><th>Remark</th></tr>
+                    </thead>
+                    <tbody>`;
+            transactions.forEach(transaction => {
+                detailsHTML += `<tr><td>${transaction.SNo}</td><td>${transaction.Timestamp}</td><td>${transaction.Amount}</td><td>${transaction.TransactionType}</td><td>${transaction.GivenTo}</td><td>${transaction.Remark}</td></tr>`;
+            });
+            detailsHTML += '</tbody></table>';
+
+            document.getElementById('detailsDisplay').innerHTML = detailsHTML;
+            document.getElementById('detailsDisplay').style.display = 'block';
+
+            // Initialize DataTable
+            $('#transactionTable').DataTable({
+                searching: true,
+                //ordering: true,
+                responsive: true
+            });
+        }
+
+        fetchTransactions();
+    </script>
+    <script src="../nav bar/script.js"></script>
+
+</body>
+</html>
